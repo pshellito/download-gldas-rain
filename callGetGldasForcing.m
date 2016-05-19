@@ -9,10 +9,10 @@ close all
 % -------------------------------------------------------------------------
 % In this example, there are two sites with latitude and longitude in the
 % following input file:
-inFile = './inFile.txt';
+inFile = './inFileForDrydowns.txt';
 % Date range requested
-qStart = [2016,2,14];
-qEnd = [2016,2,15];
+qStart = [2015,1,1];
+qEnd = [2016,3,30];
 
 % -------------------------------------------------------------------------
 % Read the input data from the text file
@@ -42,7 +42,7 @@ disp(startTime)
 
 % -------------------------------------------------------------------------
 % Call the function
-outDirectory = getNldasForcing(qNames, qLat, qLon, qStart, qEnd, outDir);
+outDirectory = getGldasForcing(qNames, qLat, qLon, qStart, qEnd, outDir);
 
 % -------------------------------------------------------------------------
 % Report where the data are held and how long the script took to run

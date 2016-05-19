@@ -1,4 +1,4 @@
-function [ outDir ] = getNldasForcing(qNames, qLat, qLon, qStart, qEnd, outDir)
+function [ outDir ] = getGldasForcing(qNames, qLat, qLon, qStart, qEnd, outDir)
 % GETGLDASFORCING This script will download GLDAS rainfall data from
 %       Nasa's servers.
 % Created by Peter J. Shellito 5/19/16
@@ -75,11 +75,11 @@ if ~iscellstr(qNames)
 end
 dnStart = floor(datenum(qStart));
 dnEnd = floor(datenum(qEnd));
-if dnStart < datenum(1979,1,2)
-    dnStart = datenum(1979,1,2);
+if dnStart < datenum(2000, 2, 24)
+    dnStart = datenum(2000, 2, 24);
 end
-if dnEnd > floor(datenum(now))-4
-    dnEnd = floor(datenum(now))-4;
+if dnEnd > floor(datenum(now))-20
+    dnEnd = floor(datenum(now))-20;
 end
 if dnEnd < dnStart
     error('Start date cannot be after end date')
@@ -118,7 +118,7 @@ qDayStr = num2str(qDays', '%02d');
 % Convert qDoy to string
 qDoyStr = num2str(qDoy', '%03d');
 % Create hour strings
-qHourStr = num2str((0:100:2300)','%04d');
+qHourStr = num2str((0:300:2300)','%04d');
 % The directory where nldas forcings are held
 ftpBaseDir = '/data/s4pa/GLDAS_SUBP/GLDAS_NOAH025SUBP_3H/';
 % The local directory where gldas forcings will be placed
@@ -134,7 +134,7 @@ end
 % The beginning of the file name of forcings
 ftpBaseFn = 'GLDAS_NOAH025SUBP_3H.A';
 % The end of the file name of forcings
-ftpEndFn = '.grb';
+ftpEndFn = '*.grb';
 % Strings of variables to read
 latStr = 'lat'; % Center of 1/8 degree pixel
 lonStr = 'lon'; % Center of 1/8 degree pixel
@@ -165,12 +165,12 @@ nasaHost = 'hydro1.sci.gsfc.nasa.gov';
 % Create an ftp object (open the connection)
 ftpObj = ftp(nasaHost);
 % The file name of the first date requested
-qFileName = [ftpBaseDir qYearStr(1,:) '/' qDoyStr(1,:) '/' ftpBaseFn qYearStr(1,:) qMonthStr(1,:) qDayStr(1,:) '.' qHourStr(1,:) ftpEndFn];
+qFileName = [ftpBaseDir qYearStr(1,:) '/' qDoyStr(1,:) '/' ftpBaseFn qYearStr(1,:) qDoyStr(1,:) '.' qHourStr(1,:) ftpEndFn];
 % Get that first file
 disp(['Getting ' qFileName '...'])
 localFileName = mget(ftpObj,qFileName);
 % Create ncdataset object
-geo = ncdataset(localFileName{1});   
+geo = ncdataset(localFileName{1});
 % Extract lat and lon from the grib file
 lat = geo.data(latStr);
 lon = geo.data(lonStr);
@@ -216,15 +216,15 @@ end % Loop through each site
 for dd = 1:length(qDatenums)
     % Location of this day's data on the local machine
     localDir = [pwd ftpBaseDir qYearStr(dd,:) '/' qDoyStr(dd,:)];
-    % Loop through each hour of the day
-    for hh = 1:24
+    % Loop through 3 hours at a time
+    for hh = 1:(24/3)
         % Create strings and such to define where the files are located on the host
-        qFileName = [ftpBaseDir qYearStr(dd,:) '/' qDoyStr(dd,:) '/' ftpBaseFn qYearStr(dd,:) qMonthStr(dd,:) qDayStr(dd,:) '.' qHourStr(hh,:) ftpEndFn];
+        qFileName = [ftpBaseDir qYearStr(dd,:) '/' qDoyStr(dd,:) '/' ftpBaseFn qYearStr(dd,:) qDoyStr(dd,:) '.' qHourStr(hh,:) ftpEndFn];
         % Get the file from Nasa's server
         disp(['Getting ' qFileName '...'])
         localFileName = mget(ftpObj,qFileName);
         % Create ncgeodataset object
-        geo = ncdataset(localFileName{1});
+        geo = ncdataset(localFileName{:});
         % Initialize a vector to hold the timestep's data (all variables) for entire domain
         domainData = nan(nLat, nLon, nVars);
         % Loop through each variable
