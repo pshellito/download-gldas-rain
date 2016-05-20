@@ -88,6 +88,14 @@ end
 % Set up some variables
 % Number of sites requested
 nSites = length(qNames);
+% Frequency of data: 3-hourly
+hrFreq = 3;
+% Create hour intervals
+qHour = [0:hrFreq:24];
+qHour = qHour(1:end-1);
+% Create hour strings
+qHourStr = num2str(qHour','%02d00');
+
 % Initialize vectors for rounded lat and lon and lat/lon idcs
 nearestLat = nan(nSites,1);
 nearestLon = nan(nSites,1);
@@ -117,8 +125,6 @@ qMonthStr = num2str(qMonths', '%02d');
 qDayStr = num2str(qDays', '%02d');
 % Convert qDoy to string
 qDoyStr = num2str(qDoy', '%03d');
-% Create hour strings
-qHourStr = num2str((0:300:2300)','%04d');
 % The directory where nldas forcings are held
 ftpBaseDir = '/data/s4pa/GLDAS_SUBP/GLDAS_NOAH025SUBP_3H/';
 % The local directory where gldas forcings will be placed
@@ -217,7 +223,7 @@ for dd = 1:length(qDatenums)
     % Location of this day's data on the local machine
     localDir = [pwd ftpBaseDir qYearStr(dd,:) '/' qDoyStr(dd,:)];
     % Loop through 3 hours at a time
-    for hh = 1:(24/3)
+    for hh = 1:(24/hrFreq)
         % Create strings and such to define where the files are located on the host
         qFileName = [ftpBaseDir qYearStr(dd,:) '/' qDoyStr(dd,:) '/' ftpBaseFn qYearStr(dd,:) qDoyStr(dd,:) '.' qHourStr(hh,:) ftpEndFn];
         % Get the file from Nasa's server
@@ -238,7 +244,7 @@ for dd = 1:length(qDatenums)
             siteMetData = squeeze(domainData(latIdcs(ss), lonIdcs(ss), :));
             % Print the data. Hour is hh-1 because hours are listed from
             % 00:00 to 23:00.
-            fprintf(fid(ss), [dateFmt varFmt], [qYears(dd) qMonths(dd) qDays(dd) (hh-1) 0 siteMetData']);
+            fprintf(fid(ss), [dateFmt varFmt], [qYears(dd) qMonths(dd) qDays(dd) qHour(hh) 0 siteMetData']);
         end % loop through each site
     end % Loop through each hour of the day
     % Delete this day's directory and all data within
