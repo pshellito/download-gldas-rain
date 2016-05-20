@@ -16,13 +16,13 @@ function [ outDir ] = getGldasForcing(qNames, qLat, qLon, qStart, qEnd, outDir)
 %       './outFiles/'
 % 
 % For your own reference, or if something goes wrong, the directory where
-% you can find all the GLDAS data documentation:
+% you can find the GLDAS data documentation:
 % http://disc.sci.gsfc.nasa.gov/uui/datasets/GLDAS_NOAH025SUBP_3H_V001/summary
 % And the location of a sample file:
 % fileDir = 'ftp://hydro1.sci.gsfc.nasa.gov/data/s4pa/GLDAS_SUBP/GLDAS_NOAH025SUBP_3H/2016/121/GLDAS_NOAH025SUBP_3H.A2016121.0000.001.2016137055857.grb';
 % 
-% Initial testing revealed that processing one month took xx minutes using
-% a CU internet connection.
+% Initial testing revealed that processing one month took 17 minutes using
+% a CU internet connection and a 2015 macbook pro.
 % 
 % ========================================================================
 % NB: This script requires the user to have downloaded and installed the
@@ -205,7 +205,7 @@ for ss = 1:nSites
     % Print header lines to the file
     fprintf(fid(ss),['%% Site: ' qNames{ss} '\n']);
     fprintf(fid(ss),['%% Site lat/lon: ' num2str([qLat(ss) qLon(ss)]) '\n']);
-    fprintf(fid(ss),['%% Closest GLDAS pixel (1/8 degree) center: ' num2str([nearestLat nearestLon]) '\n']);
+    fprintf(fid(ss),['%% Closest GLDAS pixel (1/4 degree) center: ' num2str([nearestLat nearestLon]) '\n']);
     fprintf(fid(ss),['%% File created on ' date '.\n']);
     fprintf(fid(ss),['%% Date                       ' namesStrAll '\n']);
     fprintf(fid(ss),['%% year month day hour minute ' unitsStrAll '\n']);

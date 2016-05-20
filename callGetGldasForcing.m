@@ -1,7 +1,7 @@
-% This script will call the getNldasForcing function
+% This script will call the getGldasForcing function
 % Peter Shellito
 % University of Colorado Boulder
-% 2/16/16
+% 5/19/16
 
 clear all
 close all
